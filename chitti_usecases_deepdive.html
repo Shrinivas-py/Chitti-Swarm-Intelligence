@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chitti-AI — Use Cases Deep Dive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#07080f;--card:#0d0f1a;--border:#1e2236;--teal:#00d4aa;--coral:#ff5f7e;--amber:#ffb84d;--blue:#4d9eff;--muted:#4a5068;--text:#e8eaf6;--sub:#8892b0}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);padding:20px;display:flex;flex-direction:column;gap:16px;max-width:960px;margin:0 auto}
+h1{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;margin-bottom:10px}
+.section{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px}
+.mono{font-family:'Space Mono',monospace}
+
+/* tabs */
+.tab-row{display:flex;gap:8px;flex-wrap:wrap}
+.tab{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600}
+.tab:hover{border-color:var(--teal)}
+.tab.active{border-color:var(--teal);background:rgba(0,212,170,0.07);color:var(--teal)}
+.tab .tab-icon{font-size:18px}
+
+/* panels */
+.panel{display:none}.panel.active{display:block;animation:fadeIn .25s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+/* flow */
+.flow{display:flex;align-items:stretch;gap:0;margin:14px 0;overflow-x:auto}
+.flow-box{background:#07080f;border:1px solid var(--border);border-radius:8px;padding:10px 12px;min-width:110px;flex:1;text-align:center}
+.flow-box .ft{font-size:11px;font-weight:700;color:var(--teal);margin-bottom:3px;font-family:'Space Mono',monospace}
+.flow-box .fs{font-size:9px;color:var(--sub);line-height:1.4}
+.arrow{display:flex;align-items:center;padding:0 4px;color:var(--teal);opacity:.5;font-size:16px;flex-shrink:0}
+
+/* agent cards */
+.agents-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:12px 0}
+.a-card{background:#07080f;border:1px solid var(--border);border-radius:8px;padding:12px;border-top:2px solid}
+.a-name{font-family:'Space Mono',monospace;font-size:10px;margin-bottom:4px;font-weight:700}
+.a-role{font-size:11px;color:var(--sub);line-height:1.5}
+.a-temp{font-size:10px;font-family:'Space Mono',monospace;margin-top:6px;opacity:.6}
+
+/* code */
+.code-block{background:#030408;border:1px solid var(--border);border-radius:8px;padding:14px;font-family:'Space Mono',monospace;font-size:10px;color:#c8d3f5;line-height:1.8;overflow-x:auto;margin:12px 0}
+.ck{color:#ff5f7e}.cs{color:#c3e88d}.cn{color:var(--amber)}.cf{color:var(--blue)}.cc{color:var(--muted)}
+
+/* sim */
+.sim-box{background:#030408;border:1px solid var(--border);border-radius:8px;padding:14px;margin:12px 0}
+.sim-line{padding:7px 10px;border-radius:6px;margin-bottom:6px;font-size:11px;line-height:1.5;border-left:3px solid}
+.sim-synthesis{padding:10px 14px;background:rgba(0,212,170,0.08);border:1px solid rgba(0,212,170,0.3);border-radius:8px;margin-top:10px;font-size:11px;color:var(--text);line-height:1.6}
+
+/* impact */
+.impact-row{display:flex;gap:8px;margin-top:14px;flex-wrap:wrap}
+.impact{flex:1;min-width:100px;background:#07080f;border:1px solid var(--border);border-radius:8px;padding:12px;text-align:center}
+.impact-num{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;color:var(--teal)}
+.impact-lbl{font-size:9px;color:var(--muted);margin-top:2px;line-height:1.4}
+
+/* implementation steps */
+.step-list{display:flex;flex-direction:column;gap:10px;margin:12px 0}
+.step{display:flex;gap:12px;align-items:flex-start}
+.step-num{width:24px;height:24px;border-radius:50%;background:rgba(0,212,170,0.15);border:1px solid rgba(0,212,170,0.4);color:var(--teal);font-family:'Space Mono',monospace;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px}
+.step-body{flex:1}
+.step-title{font-size:12px;font-weight:700;margin-bottom:3px}
+.step-desc{font-size:11px;color:var(--sub);line-height:1.5}
+</style>
+</head>
+<body>
+
+<h1>Use Cases — Where Chitti-AI Creates Real Value</h1>
+
+<!-- Tab bar -->
+<div class="tab-row" id="tabs">
+  <div class="tab active" data-panel="medical"><span class="tab-icon">🏥</span><span>Medical Diagnosis Aid</span></div>
+  <div class="tab" data-panel="legal"><span class="tab-icon">⚖️</span><span>Legal Review</span></div>
+  <div class="tab" data-panel="startup"><span class="tab-icon">🚀</span><span>Startup Strategy</span></div>
+  <div class="tab" data-panel="code"><span class="tab-icon">💻</span><span>Code Review</span></div>
+  <div class="tab" data-panel="research"><span class="tab-icon">🔬</span><span>Research Synthesis</span></div>
+  <div class="tab" data-panel="crisis"><span class="tab-icon">⚡</span><span>Crisis Decisions</span></div>
+</div>
+
+
+<div class="panel active" id="panel-medical">
+  <div class="section">
+    <h1>Medical Diagnosis Aid — Full Implementation Deep Dive</h1>
+    <div style="font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:14px">
+      A clinician inputs patient symptoms. Chitti spawns 5 specialist-personality agents. They independently generate differential diagnoses from shared MCP memory, score each other's reasoning, and evolve — agents with poor diagnostic logic are pruned. Final output: ranked differential with confidence % and red flags. <strong style="color:var(--text)">Patient data never leaves the hospital.</strong>
+    </div>
+    <h1>System Flow</h1>
+    <div class="flow">
+      <div class="flow-box"><div class="ft">Clinician Input</div><div class="fs">Symptoms, vitals, history, medications</div></div>
+      <div class="arrow">→</div>
+      <div class="flow-box"><div class="ft">MCP Memory Init</div><div class="fs">Problem stored as shared context pool</div></div>
+      <div class="arrow">→</div>
+      <div class="flow-box"><div class="ft">5 Specialists Generate</div><div class="fs">Each agent from different clinical lens</div></div>
+      <div class="arrow">→</div>
+      <div class="flow-box"><div class="ft">Score + Prune</div><div class="fs">LLM scores diagnostic quality 1–10</div></div>
+      <div class="arrow">→</div>
+      <div class="flow-box"><div class="ft">Synthesise</div><div class="fs">Ranked differential + red flags + next tests</div></div>
+    </div>
+
+    <!-- Agents -->
+    <h1>Specialist Agent Personalities</h1>
+    <div class="agents-grid">
+      <div class="a-card" style="border-top-color:var(--teal)">
+        <div class="a-name" style="color:var(--teal)">CARDIOLOGIST-AGENT</div>
+        <div class="a-role">Leads with cardiac causes — chest pain radiation, arrhythmia indicators, BP patterns, risk factors (age, diabetes, smoking, family history). Catches rare cardiac presentations.</div>
+        <div class="a-temp">temp: 0.7 · style: exploratory</div>
+      </div>
+      <div class="a-card" style="border-top-color:var(--blue)">
+        <div class="a-name" style="color:var(--blue)">NEUROLOGIST-AGENT</div>
+        <div class="a-role">Flags neuro red flags — headache patterns, focal deficits, consciousness changes, TIA indicators. Systematic and precise. Prevents missing acute neurological events.</div>
+        <div class="a-temp">temp: 0.3 · style: systematic</div>
+      </div>
+      <div class="a-card" style="border-top-color:var(--amber)">
+        <div class="a-name" style="color:var(--amber)">INTERNIST-AGENT</div>
+        <div class="a-role">Broad differential — GI, metabolic, infectious, autoimmune. Reads what cardio and neuro agents produced and looks for the gaps. Convergent synthesis role.</div>
+        <div class="a-temp">temp: 0.5 · style: convergent</div>
+      </div>
+      <div class="a-card" style="border-top-color:var(--coral)">
+        <div class="a-name" style="color:var(--coral)">SKEPTIC-AGENT</div>
+        <div class="a-role">Challenges every diagnosis — what doesn't fit? What symptom is being ignored? What assumption was made? Prevents premature diagnostic closure. The most valuable agent.</div>
+        <div class="a-temp">temp: 0.5 · style: adversarial</div>
+      </div>
+      <div class="a-card" style="border-top-color:#c084fc;grid-column:span 2">
+        <div class="a-name" style="color:#c084fc">RARE-DISEASE-AGENT</div>
+        <div class="a-role">High-temperature creative agent — hunts for zebras that fit the symptom pattern when horses have been ruled out. The one that catches the diagnosis everyone missed. Only used if standard differentials score below 7.0.</div>
+        <div class="a-temp">temp: 0.9 · style: creative · activated: conditionally</div>
+      </div>
+    </div>
+
+    <!-- Live simulation -->
+    <h1>Live Diagnosis Simulation — Patient Case</h1>
+    <div style="font-size:11px;color:var(--sub);margin-bottom:8px">Input: "45M, sudden severe headache 'worst of his life', neck stiffness, photophobia, BP 160/95, no fever, no focal deficits"</div>
+    <div class="sim-box">
+      <div class="sim-line" style="background:rgba(0,212,170,0.06);border-color:var(--teal)">
+        <strong style="color:var(--teal)">CARDIOLOGIST-AGENT</strong> — "Hypertensive urgency is present (160/95) but doesn't explain the sudden severe headache. Rule out hypertensive encephalopathy. However, cardiac cause unlikely given neck stiffness. Recommend: CT head + LP."
+        <div style="color:var(--amber);font-size:10px;margin-top:3px;font-family:'Space Mono',monospace">★ score: 6.2</div>
+      </div>
+      <div class="sim-line" style="background:rgba(77,158,255,0.06);border-color:var(--blue)">
+        <strong style="color:var(--blue)">NEUROLOGIST-AGENT</strong> — "Thunderclap headache + meningismus = subarachnoid haemorrhage until proven otherwise. This is a neurological emergency. CT non-contrast immediately. If negative, LP for xanthochromia. Do NOT delay for MRI."
+        <div style="color:var(--amber);font-size:10px;margin-top:3px;font-family:'Space Mono',monospace">★ score: 9.1</div>
+      </div>
+      <div class="sim-line" style="background:rgba(255,184,77,0.06);border-color:var(--amber)">
+        <strong style="color:var(--amber)">INTERNIST-AGENT</strong> — "Agree SAH is primary differential. Also consider: bacterial meningitis (no fever but early presentation), CVST (cerebral venous sinus thrombosis) given BP elevation. Internist adds: screen coagulation, rule out coagulopathy before LP."
+        <div style="color:var(--amber);font-size:10px;margin-top:3px;font-family:'Space Mono',monospace">★ score: 8.4</div>
+      </div>
+      <div class="sim-line" style="background:rgba(255,95,126,0.06);border-color:var(--coral)">
+        <strong style="color:var(--coral)">SKEPTIC-AGENT</strong> — "NEUROLOGIST-AGENT is correct. Challenge to CARDIOLOGIST-AGENT: hypertensive urgency doesn't cause thunderclap onset — cardiac hypothesis is a distraction. Challenge to INTERNIST: coag screen is secondary; SAH must be excluded first. Primary action is CT."
+        <div style="color:var(--amber);font-size:10px;margin-top:3px;font-family:'Space Mono',monospace">★ score: 8.8 · ELITE ↑</div>
+      </div>
+      <div class="sim-synthesis">
+        <strong style="color:var(--teal)">⬡ CHITTI SYNTHESIS (iteration 2):</strong><br>
+        <strong>Primary Dx: Subarachnoid Haemorrhage (SAH) — confidence 87%</strong><br>
+        Red flags: thunderclap onset, meningismus, photophobia<br>
+        Immediate action: Non-contrast CT head → if negative → LP for xanthochromia<br>
+        Secondary: CVST (8%), hypertensive encephalopathy (3%), bacterial meningitis (2%)<br>
+        <em style="color:var(--sub);font-size:10px">CARDIOLOGIST-AGENT pruned (iter 2) — cardiac hypothesis inconsistent with presentation</em>
+      </div>
+    </div>
+
+    <!-- Implementation -->
+    <h1>Implementation — What to Add to Your Codebase</h1>
+    <div class="step-list">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><div class="step-title">Add medical personalities to personalities.py</div><div class="step-desc">Add 5 new personality entries with specialist system prompts (code below). Each has a distinct clinical lens and temperature.</div></div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><div class="step-title">Add /api/diagnose endpoint to server.py</div><div class="step-desc">Wraps the standard swarm call with a medical context prefix. Forces structured output: diagnosis, confidence%, red flags, next test.</div></div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><div class="step-title">Point config.py to LM Studio (for local/hospital use)</div><div class="step-desc">Set USE_LOCAL=true in .env. Patient data stays on-premises. Zero API calls to Groq or OpenAI.</div></div></div>
+    </div>
+
+    <div class="code-block">
+<span class="cc"># ── personalities.py — add these entries ──────────────────────────────────</span>
+
+MEDICAL_PERSONALITIES = [
+  {
+    <span class="ck">"style"</span>: <span class="cs">"cardiologist"</span>,
+    <span class="ck">"temperature"</span>: <span class="cn">0.7</span>,
+    <span class="ck">"system_prompt"</span>: <span class="cs">"""You are a senior cardiologist. Given patient symptoms,
+    lead with cardiac differentials. Check: chest pain radiation, arrhythmia
+    indicators, BP patterns, risk factors (age, diabetes, smoking, family Hx).
+    Output format: DIAGNOSIS | CONFIDENCE% | RED FLAGS | NEXT TEST TO ORDER."""</span>
+  },
+  {
+    <span class="ck">"style"</span>: <span class="cs">"neurologist"</span>,
+    <span class="ck">"temperature"</span>: <span class="cn">0.3</span>,
+    <span class="ck">"system_prompt"</span>: <span class="cs">"""You are a neurologist. Flag neuro red flags immediately.
+    Focus on: headache patterns (thunderclap = emergency), focal deficits,
+    consciousness, TIA signs. If SAH or stroke suspected, say so explicitly.
+    Output format: DIAGNOSIS | CONFIDENCE% | RED FLAGS | NEXT TEST TO ORDER."""</span>
+  },
+  {
+    <span class="ck">"style"</span>: <span class="cs">"skeptic_clinician"</span>,
+    <span class="ck">"temperature"</span>: <span class="cn">0.5</span>,
+    <span class="ck">"system_prompt"</span>: <span class="cs">"""You are a senior clinician who challenges diagnoses.
+    Read the shared memory. For each proposed diagnosis: what doesn't fit?
+    What symptom is being ignored? What assumption was made?
+    Propose the BETTER diagnosis or refine the best existing one."""</span>
+  },
+  {
+    <span class="ck">"style"</span>: <span class="cs">"rare_disease_hunter"</span>,
+    <span class="ck">"temperature"</span>: <span class="cn">0.9</span>,
+    <span class="ck">"system_prompt"</span>: <span class="cs">"""You hunt for rare but serious conditions that fit the symptom
+    pattern when common diagnoses have been considered. Think: zebras.
+    Look for atypical presentations of serious conditions.
+    Only activate if existing diagnoses score below 7.0."""</span>
+  },
+]
+
+<span class="cc"># ── server.py — add this endpoint ────────────────────────────────────────</span>
+
+<span class="cf">@app</span>.post(<span class="cs">"/api/diagnose"</span>)
+<span class="ck">async def</span> <span class="cf">diagnose</span>(body: QueryRequest):
+    medical_prompt = <span class="cf">f</span><span class="cs">"""CLINICAL CASE:
+{body.question}
+
+Task: Generate a differential diagnosis ranked by likelihood.
+Each agent must output: DIAGNOSIS | CONFIDENCE% | RED FLAGS | NEXT TEST
+Final synthesis must include: top 3 differentials, immediate action, safe-to-miss check."""</span>
+    <span class="ck">return</span> StreamingResponse(
+        run_chitti_stream(medical_prompt, body.iterations, body.num_agents),
+        media_type=<span class="cs">"text/event-stream"</span>, headers=SSE_HEADERS
+    )
+
+<span class="cc"># ── .env — for local/hospital deployment ─────────────────────────────────</span>
+<span class="cc"># USE_LOCAL=true</span>
+<span class="cc"># LOCAL_MODEL_URL=http://localhost:1234/v1  # LM Studio</span>
+<span class="cc"># Patient data stays on-premises. Zero external API calls.</span>
+    </div>
+
+    <div class="impact-row">
+      <div class="impact"><div class="impact-num">5×</div><div class="impact-lbl">More clinical perspectives than single-LLM diagnosis</div></div>
+      <div class="impact"><div class="impact-num">0</div><div class="impact-lbl">Single point of failure — no one agent decides alone</div></div>
+      <div class="impact"><div class="impact-num">100%</div><div class="impact-lbl">Local option — patient data never leaves hospital</div></div>
+      <div class="impact"><div class="impact-num">87%</div><div class="impact-lbl">Confidence score on SAH in demo case above</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- LEGAL -->
+<div class="panel" id="panel-legal">
+  <div class="section">
+    <h1>Legal Document Review — How It Works</h1>
+    <div style="font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:14px">Upload a contract. Three agents read it simultaneously via shared MCP memory: a risk-spotter, a precedent-checker, and a client-advocate. Each flags different issues. The skeptic challenges false alarms. Final output: prioritised risk register with severity scores and recommended clause edits.</div>
+    <div class="agents-grid">
+      <div class="a-card" style="border-top-color:var(--coral)"><div class="a-name" style="color:var(--coral)">RISK-SPOTTER AGENT</div><div class="a-role">Hunts for unlimited liability clauses, missing IP assignment, unilateral termination rights, penalty clauses. Outputs risk severity 1–10 per clause.</div><div class="a-temp">temp: 0.4 · systematic</div></div>
+      <div class="a-card" style="border-top-color:var(--amber)"><div class="a-name" style="color:var(--amber)">PRECEDENT AGENT</div><div class="a-role">Cross-references clauses against case law. Contextualises risk — a clause that reads dangerous may be standard in the jurisdiction. Calibrates risk scores from the risk-spotter.</div><div class="a-temp">temp: 0.3 · systematic</div></div>
+      <div class="a-card" style="border-top-color:var(--blue)"><div class="a-name" style="color:var(--blue)">CLIENT ADVOCATE</div><div class="a-role">Reads the contract from the client's business reality. Identifies clauses that are theoretically acceptable but operationally dangerous given the client's specific model.</div><div class="a-temp">temp: 0.6 · convergent</div></div>
+      <div class="a-card" style="border-top-color:var(--teal)"><div class="a-name" style="color:var(--teal)">SKEPTIC AGENT</div><div class="a-role">Challenges both alarmism and false reassurance. Prevents over-lawyering AND under-reaction. Produces the calibrated final risk register.</div><div class="a-temp">temp: 0.5 · adversarial</div></div>
+    </div>
+    <div class="sim-box">
+      <div class="sim-line" style="background:rgba(255,95,126,0.06);border-color:var(--coral)"><strong style="color:var(--coral)">RISK-SPOTTER:</strong> "Clause 14.3 — unlimited liability with no cap. RISK: 9/10. This could bankrupt the client on a single contract dispute."</div>
+      <div class="sim-line" style="background:rgba(255,184,77,0.06);border-color:var(--amber)"><strong style="color:var(--amber)">PRECEDENT:</strong> "Clause 14.3 mirrors Hadley v Baxendale standard. Courts interpret this narrowly — actual causation required. Revise risk to 6/10."</div>
+      <div class="sim-line" style="background:rgba(77,158,255,0.06);border-color:var(--blue)"><strong style="color:var(--blue)">CLIENT ADVOCATE:</strong> "Client's net margin is 4%. Even a £200K dispute under 14.3 is existentially dangerous. Precedent argument doesn't protect against litigation cost. Risk stays at 8/10 for THIS client."</div>
+      <div class="sim-synthesis"><strong style="color:var(--teal)">⬡ SYNTHESIS:</strong> Clause 14.3 — RISK 7/10. Recommend: add £500K liability cap. Precedent limits extreme exposure but litigation cost alone is dangerous at client's margin. Draft redline provided.</div>
+    </div>
+  </div>
+</div>
+
+<!-- STARTUP -->
+<div class="panel" id="panel-startup">
+  <div class="section">
+    <h1>Startup Strategy — How It Works</h1>
+    <div style="font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:14px">Founder describes their startup idea. Chitti runs a VC agent, operator agent, and customer agent simultaneously. They stress-test market size, unit economics, and real user pain. Final output: go/no-go with the 3 critical assumptions to validate and suggested experiments.</div>
+    <div class="agents-grid">
+      <div class="a-card" style="border-top-color:var(--teal)"><div class="a-name" style="color:var(--teal)">VC-MINDSET AGENT</div><div class="a-role">Is this a billion-dollar market? Can it scale 10x without proportional cost increase? What's the defensible moat in year 3? Thinks in fund returns, not unit economics.</div></div>
+      <div class="a-card" style="border-top-color:var(--amber)"><div class="a-name" style="color:var(--amber)">OPERATOR AGENT</div><div class="a-role">What breaks first at 1000 users? What's the real CAC? What's the support nightmare at scale? Thinks in hiring, processes, and the things founders ignore until it's too late.</div></div>
+      <div class="a-card" style="border-top-color:var(--blue)"><div class="a-name" style="color:var(--blue)">CUSTOMER AGENT</div><div class="a-role">Would a real person pay for this today without being asked nicely? What's the switching cost from the current solution? Is this a painkiller or a vitamin?</div></div>
+      <div class="a-card" style="border-top-color:var(--coral)"><div class="a-name" style="color:var(--coral)">DEVIL'S ADVOCATE</div><div class="a-role">Who already does this better? What's the single assumption this entire business rests on? What does the market look like if that assumption is wrong?</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CODE -->
+<div class="panel" id="panel-code">
+  <div class="section">
+    <h1>Code Architecture Review — How It Works</h1>
+    <div style="font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:14px">Paste your codebase or architecture description. Three specialist agents run in parallel via shared MCP memory — each reading what the others flagged — then a synthesis agent produces a prioritised action list.</div>
+    <div class="agents-grid">
+      <div class="a-card" style="border-top-color:var(--coral)"><div class="a-name" style="color:var(--coral)">SECURITY AGENT</div><div class="a-role">Hunts injection points, auth flaws, secrets in code, OWASP top 10. Outputs: vulnerability, severity, exact line, fix recommendation.</div><div class="a-temp">temp: 0.3 · systematic</div></div>
+      <div class="a-card" style="border-top-color:var(--amber)"><div class="a-name" style="color:var(--amber)">PERFORMANCE AGENT</div><div class="a-role">Finds N+1 queries, missing indices, blocking I/O, memory leaks, unoptimised loops. Quantifies: "This loop is O(n²) — at 10K records it will take 45s."</div><div class="a-temp">temp: 0.4 · analytical</div></div>
+      <div class="a-card" style="border-top-color:var(--blue)"><div class="a-name" style="color:var(--blue)">MAINTAINABILITY AGENT</div><div class="a-role">Flags tech debt — god classes, missing tests, coupling, magic numbers, dead code. Estimates refactor effort in story points.</div><div class="a-temp">temp: 0.5 · systematic</div></div>
+      <div class="a-card" style="border-top-color:var(--teal)"><div class="a-name" style="color:var(--teal)">ARCHITECT AGENT</div><div class="a-role">Reads what the three specialists flagged and proposes a coherent refactor plan. Prioritises by business risk × implementation cost.</div><div class="a-temp">temp: 0.5 · convergent</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- RESEARCH -->
+<div class="panel" id="panel-research">
+  <div class="section">
+    <h1>Research Synthesis — How It Works</h1>
+    <div style="font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:14px">Feed Chitti 50 paper abstracts. Agents extract claims, identify conflicts between papers, flag methodology weaknesses, and surface the consensus — and the dissent. The skeptic agent specifically hunts for papers that contradict the mainstream narrative.</div>
+    <div class="agents-grid">
+      <div class="a-card" style="border-top-color:var(--teal)"><div class="a-name" style="color:var(--teal)">EXTRACTOR AGENT</div><div class="a-role">Pulls key claims from each paper, standardises them into structured findings. Identifies effect sizes, sample sizes, and study design.</div></div>
+      <div class="a-card" style="border-top-color:var(--amber)"><div class="a-name" style="color:var(--amber)">CONFLICT DETECTOR</div><div class="a-role">Cross-references claims across papers. Surfaces contradictions: "Paper 12 claims X; Paper 31 claims ¬X with 2× sample size."</div></div>
+      <div class="a-card" style="border-top-color:var(--blue)"><div class="a-name" style="color:var(--blue)">METHODOLOGY CRITIC</div><div class="a-role">Flags weak methodologies — small n, no control group, industry funding, self-reported data. Weights findings by study quality.</div></div>
+      <div class="a-card" style="border-top-color:var(--coral)"><div class="a-name" style="color:var(--coral)">DISSENT HUNTER</div><div class="a-role">Specifically finds the minority view. The papers that didn't get cited. The findings that complicate the consensus. The science that gets ignored.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- CRISIS -->
+<div class="panel" id="panel-crisis">
+  <div class="section">
+    <h1>Crisis Decision Making — How It Works</h1>
+    <div style="font-size:12px;color:var(--sub);line-height:1.7;margin-bottom:14px">Under time pressure — server down, PR crisis, financial decision under fire. Four agents run simultaneously. Final output is the fastest safe action, with explicit risk quantification of each option. Designed to run in under 20 seconds on Groq.</div>
+    <div class="agents-grid">
+      <div class="a-card" style="border-top-color:var(--teal)"><div class="a-name" style="color:var(--teal)">OPTIMIST AGENT</div><div class="a-role">Finds the fastest path forward. Assumes best-case. Maps the actions that could resolve this in the shortest time. High temperature — lateral thinking under pressure.</div><div class="a-temp">temp: 0.8</div></div>
+      <div class="a-card" style="border-top-color:var(--coral)"><div class="a-name" style="color:var(--coral)">PESSIMIST AGENT</div><div class="a-role">For each proposed action, surfaces what could go wrong. Quantifies the downside. Prevents the crisis from becoming a disaster through premature optimism.</div><div class="a-temp">temp: 0.4</div></div>
+      <div class="a-card" style="border-top-color:var(--amber)"><div class="a-name" style="color:var(--amber)">RISK QUANTIFIER</div><div class="a-role">Assigns probability and impact to each option's failure mode. "Option A: 20% chance of 4h outage vs Option B: 5% chance of data loss." Makes the tradeoff legible.</div><div class="a-temp">temp: 0.3</div></div>
+      <div class="a-card" style="border-top-color:var(--blue)"><div class="a-name" style="color:var(--blue)">PRAGMATIST AGENT</div><div class="a-role">Reads the risk analysis and picks the highest expected-value action given the constraints. Produces the final recommendation with explicit reasoning.</div><div class="a-temp">temp: 0.5</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.panel).classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

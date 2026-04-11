@@ -1,0 +1,215 @@
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{--bg:#07080f;--card:#0d0f1a;--border:#1e2236;--teal:#00d4aa;--coral:#ff5f7e;--amber:#ffb84d;--blue:#4d9eff;--muted:#4a5068;--text:#e8eaf6;--sub:#8892b0}
+  #root{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--text);min-height:600px;padding:20px;display:flex;flex-direction:column;gap:16px}
+  .mono{font-family:'Space Mono',monospace}
+  .header{display:flex;align-items:center;justify-content:space-between}
+  .logo{display:flex;align-items:center;gap:10px}
+  .logo-icon{width:32px;height:32px;background:linear-gradient(135deg,var(--teal),#00a882);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px}
+  .logo-text{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;letter-spacing:2px;color:var(--teal)}
+  .badge{background:#00d4aa18;border:1px solid #00d4aa44;color:var(--teal);font-size:10px;padding:3px 10px;border-radius:20px;font-family:'Space Mono',monospace;letter-spacing:1px}
+  .live-dot{width:6px;height:6px;border-radius:50%;background:var(--teal);display:inline-block;animation:pulse 1.5s infinite}
+  @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 #00d4aa66}50%{opacity:.6;box-shadow:0 0 0 4px #00d4aa00}}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px}
+  .metric-label{font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:6px;font-family:'Space Mono',monospace}
+  .metric-value{font-size:28px;font-weight:600;font-family:'Space Mono',monospace}
+  .metric-sub{font-size:11px;color:var(--sub);margin-top:4px}
+  .teal{color:var(--teal)}.coral{color:var(--coral)}.amber{color:var(--amber)}.blue{color:var(--blue)}
+  .section-title{font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;font-family:'Space Mono',monospace;margin-bottom:10px}
+  .agent-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)}
+  .agent-row:last-child{border-bottom:none}
+  .agent-emoji{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0}
+  .agent-name{font-size:12px;font-weight:500;flex:1}
+  .agent-role{font-size:10px;color:var(--sub)}
+  .bar-wrap{width:80px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:2px;transition:width 1.2s cubic-bezier(.4,0,.2,1)}
+  .score-pill{font-size:10px;font-family:'Space Mono',monospace;padding:2px 7px;border-radius:4px;min-width:36px;text-align:center}
+  .accuracy-ring{position:relative;width:120px;height:120px;margin:0 auto 8px}
+  .accuracy-ring svg{transform:rotate(-90deg)}
+  .accuracy-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+  .accuracy-num{font-size:24px;font-weight:700;font-family:'Space Mono',monospace;color:var(--teal)}
+  .accuracy-lbl{font-size:9px;color:var(--muted);letter-spacing:1px}
+  .idea-card{background:#0a0c16;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;border-left:3px solid var(--teal);transition:all .3s}
+  .idea-card:hover{border-color:var(--teal);background:#0d1020}
+  .idea-meta{display:flex;gap:8px;margin-bottom:5px;align-items:center}
+  .iter-tag{font-size:9px;font-family:'Space Mono',monospace;color:var(--muted)}
+  .idea-text{font-size:11px;color:var(--sub);line-height:1.5}
+  .status-bar{display:flex;gap:6px;align-items:center}
+  .status-step{flex:1;height:3px;border-radius:2px;background:var(--border);position:relative;overflow:hidden}
+  .status-step.done{background:var(--teal)}
+  .status-step.active{background:var(--border)}
+  .status-step.active::after{content:'';position:absolute;top:0;left:0;height:100%;width:40%;background:var(--teal);animation:slide 1.2s ease-in-out infinite}
+  @keyframes slide{0%{left:-40%}100%{left:100%}}
+  .step-label{font-size:9px;color:var(--muted);font-family:'Space Mono',monospace;margin-top:4px}
+  .thought-bubble{background:#0a0c16;border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:11px;color:var(--sub);line-height:1.6;position:relative}
+  .thought-bubble::before{content:'';position:absolute;left:16px;bottom:-6px;width:10px;height:10px;background:#0a0c16;border-right:1px solid var(--border);border-bottom:1px solid var(--border);transform:rotate(45deg)}
+  .tab-row{display:flex;gap:4px;margin-bottom:10px}
+  .tab{font-size:10px;padding:4px 10px;border-radius:6px;cursor:pointer;color:var(--muted);font-family:'Space Mono',monospace;letter-spacing:1px;border:1px solid transparent;transition:all .2s}
+  .tab.active{background:#00d4aa18;border-color:#00d4aa44;color:var(--teal)}
+  .use-case-btn{background:#0d0f1a;border:1px solid var(--border);border-radius:8px;padding:10px 14px;cursor:pointer;text-align:left;transition:all .2s;width:100%;color:var(--text)}
+  .use-case-btn:hover,.use-case-btn.active{border-color:var(--teal);background:#00d4aa0a}
+  .use-case-icon{font-size:16px;margin-bottom:4px}
+  .use-case-title{font-size:12px;font-weight:500}
+  .use-case-sub{font-size:10px;color:var(--muted)}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .anim{animation:fadeIn .4s ease both}
+</style>
+<div id="root">
+  <div class="header">
+    <div class="logo">
+      <div class="logo-icon">⬡</div>
+      <span class="logo-text">CHITTI-AI</span>
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--teal);animation:pulse 1.5s infinite"></div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center">
+      <span class="badge">LIVE SESSION</span>
+      <span style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace" id="timer">00:47</span>
+    </div>
+  </div>
+
+  <div style="background:#0d0f1a;border:1px solid var(--border);border-radius:10px;padding:12px 16px">
+    <div style="font-size:10px;color:var(--muted);font-family:'Space Mono',monospace;margin-bottom:4px">ACTIVE QUERY</div>
+    <div style="font-size:13px;font-weight:500;margin-bottom:10px" id="query-text">"Create a 7-day web development learning plan for beginners"</div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="status-step done"></div>
+      <div class="status-step done"></div>
+      <div class="status-step active"></div>
+      <div class="status-step" id="s4"></div>
+      <div class="status-step" id="s5"></div>
+    </div>
+    <div style="display:flex;gap:0;margin-top:4px">
+      <div class="step-label" style="flex:1">init</div>
+      <div class="step-label" style="flex:1">activate</div>
+      <div class="step-label" style="flex:1;color:var(--teal)">thinking</div>
+      <div class="step-label" style="flex:1">scoring</div>
+      <div class="step-label" style="flex:1">output</div>
+    </div>
+  </div>
+
+  <div class="grid3">
+    <div class="card">
+      <div class="metric-label">Consensus Score</div>
+      <div class="accuracy-ring">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#1e2236" stroke-width="8"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="#00d4aa" stroke-width="8" stroke-dasharray="314" stroke-dashoffset="47" stroke-linecap="round"/>
+        </svg>
+        <div class="accuracy-center">
+          <div class="accuracy-num">85%</div>
+          <div class="accuracy-lbl">ACCURACY</div>
+        </div>
+      </div>
+      <div class="metric-sub" style="text-align:center">↑ 12% from iteration 1</div>
+    </div>
+    <div class="card">
+      <div class="metric-label">Ideas Generated</div>
+      <div class="metric-value teal" id="idea-count">47</div>
+      <div class="metric-sub">across 3 iterations</div>
+      <div style="margin-top:10px;display:flex;gap:4px">
+        <div style="flex:4;height:4px;background:var(--teal);border-radius:2px"></div>
+        <div style="flex:3;height:4px;background:#00d4aa66;border-radius:2px"></div>
+        <div style="flex:2;height:4px;background:#00d4aa33;border-radius:2px"></div>
+      </div>
+      <div style="font-size:9px;color:var(--muted);margin-top:4px;font-family:'Space Mono',monospace">Iter 3 · 2 · 1</div>
+    </div>
+    <div class="card">
+      <div class="metric-label">Agents Survived</div>
+      <div class="metric-value amber">3<span style="font-size:14px;color:var(--muted)">/5</span></div>
+      <div class="metric-sub">Evolution pruned 2 weak agents</div>
+      <div style="margin-top:10px;display:flex;gap:4px;align-items:center">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--teal)"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--teal)"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--teal)"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:#1e2236"></div>
+        <div style="width:8px;height:8px;border-radius:50%;background:#1e2236"></div>
+        <span style="font-size:9px;color:var(--muted);margin-left:4px;font-family:'Space Mono',monospace">60% survival</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="section-title">Agent Leaderboard</div>
+      <div id="agent-list">
+        <div class="agent-row anim" style="animation-delay:.05s">
+          <div class="agent-emoji" style="background:#00d4aa1a">🧠</div>
+          <div style="flex:1"><div class="agent-name">A-03 Analytical</div><div class="agent-role">Pattern recognition</div></div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:92%;background:var(--teal)"></div></div>
+          <div class="score-pill" style="background:#00d4aa18;color:var(--teal)">9.2</div>
+        </div>
+        <div class="agent-row anim" style="animation-delay:.1s">
+          <div class="agent-emoji" style="background:#ffb84d1a">✦</div>
+          <div style="flex:1"><div class="agent-name">A-01 Creative</div><div class="agent-role">Divergent thinking</div></div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:84%;background:var(--amber)"></div></div>
+          <div class="score-pill" style="background:#ffb84d18;color:var(--amber)">8.4</div>
+        </div>
+        <div class="agent-row anim" style="animation-delay:.15s">
+          <div class="agent-emoji" style="background:#4d9eff1a">◈</div>
+          <div style="flex:1"><div class="agent-name">A-02 Systematic</div><div class="agent-role">Sequential logic</div></div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:79%;background:var(--blue)"></div></div>
+          <div class="score-pill" style="background:#4d9eff18;color:var(--blue)">7.9</div>
+        </div>
+        <div class="agent-row anim" style="animation-delay:.2s;opacity:.4">
+          <div class="agent-emoji" style="background:#1e2236">◉</div>
+          <div style="flex:1"><div class="agent-name">A-04 Convergent</div><div class="agent-role" style="color:var(--coral)">Pruned — low score</div></div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:38%;background:var(--coral)"></div></div>
+          <div class="score-pill" style="background:#ff5f7e18;color:var(--coral)">3.8</div>
+        </div>
+        <div class="agent-row anim" style="animation-delay:.25s;opacity:.4">
+          <div class="agent-emoji" style="background:#1e2236">⬡</div>
+          <div style="flex:1"><div class="agent-name">A-05 Pragmatic</div><div class="agent-role" style="color:var(--coral)">Pruned — low score</div></div>
+          <div class="bar-wrap"><div class="bar-fill" style="width:31%;background:var(--coral)"></div></div>
+          <div class="score-pill" style="background:#ff5f7e18;color:var(--coral)">3.1</div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title">Live Idea Feed</div>
+      <div id="idea-feed">
+        <div class="idea-card anim" style="border-left-color:var(--teal);animation-delay:.05s">
+          <div class="idea-meta"><span style="font-size:9px;background:#00d4aa18;color:var(--teal);padding:2px 6px;border-radius:4px;font-family:'Space Mono',monospace">A-03</span><span class="iter-tag">iter 3</span><span style="margin-left:auto;font-size:10px;color:var(--teal)">★ 9.2</span></div>
+          <div class="idea-text">Dedicate Day 1 to HTML structure only — use MDN docs + build one real webpage, no tutorials until you've read the spec.</div>
+        </div>
+        <div class="idea-card anim" style="border-left-color:var(--amber);animation-delay:.1s">
+          <div class="idea-meta"><span style="font-size:9px;background:#ffb84d18;color:var(--amber);padding:2px 6px;border-radius:4px;font-family:'Space Mono',monospace">A-01</span><span class="iter-tag">iter 3</span><span style="margin-left:auto;font-size:10px;color:var(--amber)">★ 8.6</span></div>
+          <div class="idea-text">Build a clone of a site you love each day — copying forces you to understand every decision the original developer made.</div>
+        </div>
+        <div class="idea-card anim" style="border-left-color:var(--blue);animation-delay:.15s">
+          <div class="idea-meta"><span style="font-size:9px;background:#4d9eff18;color:var(--blue);padding:2px 6px;border-radius:4px;font-family:'Space Mono',monospace">A-02</span><span class="iter-tag">iter 2</span><span style="margin-left:auto;font-size:10px;color:var(--blue)">★ 7.9</span></div>
+          <div class="idea-text">Follow HTML → CSS → JS strictly in sequence — don't touch JavaScript until your CSS layout is solid.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="section-title">Final Synthesised Answer</div>
+    <div style="font-size:12px;line-height:1.8;color:var(--sub);background:#0a0c16;border-radius:8px;padding:14px;border-left:3px solid var(--teal)">
+      <span style="color:var(--teal);font-weight:600">Day 1</span> HTML only — read MDN, build one real page from scratch.<br>
+      <span style="color:var(--teal);font-weight:600">Day 2</span> CSS fundamentals — Flexbox + Grid, clone one layout you admire.<br>
+      <span style="color:var(--teal);font-weight:600">Day 3</span> JavaScript basics — DOM manipulation, no frameworks yet.<br>
+      <span style="color:var(--teal);font-weight:600">Day 4</span> Build a complete mini-project combining days 1–3.<br>
+      <span style="color:var(--teal);font-weight:600">Day 5</span> Git + deployment — push your project to GitHub Pages.<br>
+      <span style="color:var(--teal);font-weight:600">Day 6</span> Responsive design + accessibility — mobile-first rewrite of Day 4 project.<br>
+      <span style="color:var(--teal);font-weight:600">Day 7</span> Code review day — read others' code on GitHub, refactor your own.
+    </div>
+    <div style="display:flex;gap:16px;margin-top:12px">
+      <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--teal);font-family:'Space Mono',monospace">85%</div><div style="font-size:9px;color:var(--muted)">Consensus</div></div>
+      <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--amber);font-family:'Space Mono',monospace">47</div><div style="font-size:9px;color:var(--muted)">Ideas processed</div></div>
+      <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--blue);font-family:'Space Mono',monospace">3</div><div style="font-size:9px;color:var(--muted)">Iterations</div></div>
+      <div style="text-align:center"><div style="font-size:18px;font-weight:700;color:var(--coral);font-family:'Space Mono',monospace">2</div><div style="font-size:9px;color:var(--muted)">Pruned agents</div></div>
+    </div>
+  </div>
+</div>
+<script>
+let s=47,t=47;
+setInterval(()=>{
+  s++;document.getElementById('idea-count').textContent=s;
+  t++;let m=Math.floor(t/60),sec=t%60;
+  document.getElementById('timer').textContent=(m<10?'0':'')+m+':'+(sec<10?'0':'')+sec;
+},2800);
+</script>
