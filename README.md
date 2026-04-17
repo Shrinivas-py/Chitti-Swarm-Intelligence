@@ -235,5 +235,4 @@ Day 3: Practice JavaScript fundamentals
 * Self-learning agents (feedback loop)
 * Digital twin systems
 * Autonomous decision engines
-* Integration with real-world tools/APIs
 
