@@ -1,6 +1,6 @@
 # 🚀 Chitti AI – Emergent Multi-Agent MCP System
 
-> **“We don’t orchestrate intelligence — we let it emerge.”**
+> **“We don’t orchestrate intelligence — we let it emerge.”**.
 
 ---
 
